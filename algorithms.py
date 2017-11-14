@@ -28,11 +28,39 @@ class GridWorld(object):
                 print(state_symbol, end=' ')
             print('')
 
+    def print_latex(self, policy):
+        ltx = "\\begin{tabular}{c|c|c}"
+
+            labels = ['←', '→', '↑', '↓']
+            for row in range(self.size):
+                for col in range(self.size):
+                    state_symbol = ''
+                    if (row, col) == self.start_state:
+                        state_symbol = 'S'
+                    elif (row, col) == self.bad_state:
+                        state_symbol = 'B'
+                    elif (row, col) == self.end_state:
+                        state_symbol = 'G'
+                    elif not print_policy:
+                        state_symbol = '-'
+                    if print_policy:
+                        state_symbol += labels[numpy.argmax(policy[(row,col)])]
+                    print(state_symbol, end=' ')
+                print('')
+
+
+
+
     def state_to_vec(self, state):
         index = state[0] * self.size + state[1]
         v = numpy.zeros(self.size**2)
         v[index] = 1
         return v
+
+    def state_to_mat(self, state):
+        mat = numpy.zeros((self.size, self.size))
+        mat[state] = 1
+        return mat
 
 
 
@@ -239,6 +267,10 @@ class SamplingAlgorithm(object):
 
         return range(limit), y, converged_at
 
+
+    def print_info(self):
+        self.mdp.g.print_grid(self.policy, print_policy = True)
+        print(self.state_action_values)
 
     def __str__(self):
         return self.__class__.__name__ + " epsilon={epsilon}".format(epsilon = self.epsilon)
